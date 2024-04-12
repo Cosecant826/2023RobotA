@@ -17,7 +17,7 @@
 *.hex
 *.bin
 *.Bak
-
+*.orig
 #Keil Project screen layout file
 *.uvguix.*
 *.uvgui.*
@@ -25,3 +25,8 @@
 #JLINK file
 JLinkLog.txt
 *.dbgconf
+*.obj
+*.m51
+Objects/project
+project.uvopt
+project.uvproj
