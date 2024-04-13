@@ -22,3 +22,4 @@
 *.dbgconf
 *.obj
 *.m51
+Objects/project
