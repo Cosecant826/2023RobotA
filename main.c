@@ -52,7 +52,7 @@ changemode  0手动调整，1自动调整
 
 void showmenu()				//显示状态框架
 {
-    Lcd12864_ShowString(0, 0, "温度    窗帘:");
+    Lcd12864_ShowString(0, 0, "温度  牛窗帘:");
     Lcd12864_ShowString(1, 0, "湿度    风扇:");
     Lcd12864_ShowString(2, 0, "光照    灯光: ");
     Lcd12864_ShowString(3, 0, "    年  月  日");

@@ -1,4 +1,3 @@
-# Keil Generated output files in the sub-directories .\Listings and .\Objects
 *.lst
 *.o
 *.d
@@ -18,15 +17,8 @@
 *.bin
 *.Bak
 *.orig
-#Keil Project screen layout file
 *.uvguix.*
 *.uvgui.*
-
-#JLINK file
-JLinkLog.txt
 *.dbgconf
 *.obj
 *.m51
-Objects/project
-project.uvopt
-project.uvproj
