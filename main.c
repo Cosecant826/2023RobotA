@@ -57,7 +57,7 @@ void showmenu()				//显示状态框架
     Lcd12864_ShowString(2, 0, "光照    灯光: ");
     Lcd12864_ShowString(3, 0, "    年  月  日");
     Lcd12864_ShowString(4, 0, "光照    灯光: ");
-    Lcd12864_ShowString(6, 0,  "  :   :   666A");
+    Lcd12864_ShowString(6, 0,  "  :   :   ");
 }
 
 void autoset()			//无视hflag&lflag进行自动调整，用于手动调整切换回自动调整时hflag&lflag不准确
@@ -116,7 +116,7 @@ void main()
     TR0 = 0;
     Lcd12864_Init();
     Lcd12864_ShowString(0, 0, "ZNJJXT");
-    Lcd12864_ShowString(1, 0, "0328");
+    Lcd12864_ShowString(1, 0, "20030826");
     DS1302_Init();
     DS1302_SetTime();
     DHT_Init();
