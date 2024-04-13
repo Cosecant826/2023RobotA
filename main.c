@@ -116,7 +116,7 @@ void main()
     TR0 = 0;
     Lcd12864_Init();
     Lcd12864_ShowString(0, 0, "ZNJJXT");
-    Lcd12864_ShowString(1, 0, "20030826");
+    Lcd12864_ShowString(1, 0, "030826");
     DS1302_Init();
     DS1302_SetTime();
     DHT_Init();
