@@ -33,7 +33,7 @@
 
 
 u16 Light;//亮度
-bit flag, lcdflag = 0, ledflag, motorflag, Hflag, Lflag, autoflag;
+bit flag, lcdflag = 0, ledflag, motorflag, Hflag, Lflag, autoflag,page;
 /*
 flag=0密码锁输入，输入正确密码后flag=1
 lcdflag=1，显示时间温湿度等状态，通过定时器1检测
@@ -55,9 +55,8 @@ void showmenu()				//显示状态框架
     Lcd12864_ShowString(0, 0, "温度    窗帘:");
     Lcd12864_ShowString(1, 0, "湿度    风扇:");
     Lcd12864_ShowString(2, 0, "光照    灯光: ");
-    Lcd12864_ShowString(3, 0, "    年  月  日");
-    Lcd12864_ShowString(4, 0, "光照    灯光: ");
-    Lcd12864_ShowString(6, 0,  "  :   :   ");
+    Lcd12864_ShowString(4, 0, "    年  月  日");
+    Lcd12864_ShowString(5, 0,  "  :   :   ");
 }
 
 void autoset()			//无视hflag&lflag进行自动调整，用于手动调整切换回自动调整时hflag&lflag不准确
@@ -116,7 +115,7 @@ void main()
     TR0 = 0;
     Lcd12864_Init();
     Lcd12864_ShowString(0, 0, "ZNJJXT");
-    Lcd12864_ShowString(1, 0, "20030826");
+    Lcd12864_ShowString(1, 0, "0826");
     DS1302_Init();
     DS1302_SetTime();
     DHT_Init();
@@ -170,6 +169,7 @@ void main()
 
                 if (i == 6)
                 {
+					TR0=0;
                     if (Password == PasswordNum)
                     {
                         Password = 0;
@@ -222,6 +222,7 @@ void main()
                         EA = 1;
                     }
                 }
+				TR0=1;
             }
             else if (KeyNum == 11)
             {
@@ -265,9 +266,16 @@ void main()
                 {
                     TR1 = 0;
                     Lcd12864_Init();
+                Lcd12864_ShowString(0, 0, "修改密码");
                     keymode = 1;
                     lcdflag = 0;
                 }
+				else if(KeyNum==3)
+				{
+					page=!page;
+					if(page) Roll(32);
+					else Roll(0);
+				}
                 else
                 {
                     DS1302_ReadTime();
@@ -396,15 +404,14 @@ P22 = motorflag;
             }
             else
             {
-                Roll(0);
-                Lcd12864_ShowString(0, 0, "修改密码");
+                
 
                 if (KeyNum <= 10 && KeyNum > 0 && k < 6)
                 {
-                    if (k == 0)
-                    {
-                        Lcd12864_WriteCMD(0x90);
-                    }
+//                    if (k == 0)
+//                    {
+//                        Lcd12864_WriteCMD(0x90);
+//                    }
 
                     Password *= 10;
                     Password += KeyNum % 10;
@@ -445,6 +452,11 @@ P22 = motorflag;
 
                 if (KeyNum == 13)
                 {
+					Password=0;
+					for(;k>0;k--)
+                    {
+						temp[k]=0;
+                    }
                     showmenu();
                     keymode = 0;
                     TR1 = 1;
@@ -501,26 +513,26 @@ void Timer1_Isr(void) interrupt 3
         P24 = 1;
     }
 
-    if (T1Count >= 50)
-    {
-        T1Count = 0;
+//    if (T1Count >= 50)
+//    {
+//        T1Count = 0;
 
-        if (umode == 0)
-        {
-            u++;
-        }
-        else
-        {
-            u--;
-        }
+//        if (umode == 0)
+//        {
+//            u++;
+//        }
+//        else
+//        {
+//            u--;
+//        }
 
-        if (u >= 16 || u <= 0)
-        {
-            umode = !umode;
-        }
+//        if (u >= 16 || u <= 0)
+//        {
+//            umode = !umode;
+//        }
 
-        Roll(u);
-    }
+//        Roll(u);
+//    }
 
     if (T2Count == 20)
     {
@@ -528,26 +540,23 @@ void Timer1_Isr(void) interrupt 3
 
         if (lcdflag == 1)
         {
-            Lcd12864_ShowNum(3, 0, DS1302_Time[0] + 2000, 4);
-            Lcd12864_ShowNum(3, 3, DS1302_Time[1], 2);
-            Lcd12864_ShowNum(3, 5, DS1302_Time[2], 2);
-            Lcd12864_ShowNum(6, 0, DS1302_Time[3], 2);
-            Lcd12864_ShowNum(6, 2, DS1302_Time[4], 2);
-            Lcd12864_ShowNum(6, 4, DS1302_Time[5], 2);
+            Lcd12864_ShowNum(4, 0, DS1302_Time[0] + 2000, 4);
+            Lcd12864_ShowNum(4, 3, DS1302_Time[1], 2);
+            Lcd12864_ShowNum(4, 5, DS1302_Time[2], 2);
+            Lcd12864_ShowNum(5, 0, DS1302_Time[3], 2);
+            Lcd12864_ShowNum(5, 2, DS1302_Time[4], 2);
+            Lcd12864_ShowNum(5, 4, DS1302_Time[5], 2);
             Lcd12864_ShowNum(0, 2, DHTHotH, 2);
             Lcd12864_ShowNum(1, 2, DHTWetH, 2);
             Lcd12864_ShowNum(2, 2, Light, 4);
-            Lcd12864_ShowNum(4, 2, Light, 4);
 
             if (ledflag)
             {
                 Lcd12864_ShowString(2, 7, "开");//灯
-                Lcd12864_ShowString(4, 7, "开");
             }
             else
             {
                 Lcd12864_ShowString(2, 7, "关");//灯
-                Lcd12864_ShowString(4, 7, "关");
             }
 
             if (motorflag)
@@ -578,11 +587,11 @@ void Timer1_Isr(void) interrupt 3
 
             if (changemode)
             {
-                Lcd12864_ShowString(3, 7, "自");
+                Lcd12864_ShowString(3, 0, "自动调节");
             }
             else
             {
-                Lcd12864_ShowString(3, 7, "手");    //手动调节
+                Lcd12864_ShowString(3, 0, "手动调节");    //手动调节
             }
         }
     }
