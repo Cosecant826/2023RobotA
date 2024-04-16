@@ -1,15 +1,18 @@
-/*	P20 LED
-	P24 ÃÅËø
-	P22 ·çÉÈ
-	key1 ¼üÈë1     ÊÖ¶¯×Ô¶¯ÇÐ»»¿ª¹Ø
-	key5 LED¿ª¹Ø
-	key9 ·çÉÈ¿ª¹Ø
-	key13-16  ²½½øµç»ú1 2 3 4È¦
-	key2  ÐÞ¸ÄÃÜÂë
-	key11  ÍË¸ñ
-	key12  È·ÈÏÐÞ¸ÄÃÜÂë
-	key13  ÍË³öÐÞ¸ÄÃÜÂë
-    P33  ÆÁÄ»±³¹â¿ª¹Ø
+/*	P22 LED
+	P24 é—¨é”
+	P23 é£Žæ‰‡
+ P31  dht11
+
+	key1 é”®å…¥1     æ‰‹åŠ¨è‡ªåŠ¨åˆ‡æ¢å¼€å…³
+	key5 LEDå¼€å…³
+	key9 é£Žæ‰‡å¼€å…³
+	key13-16  æ­¥è¿›ç”µæœº1 2 3 4åœˆ
+	key2  ä¿®æ”¹å¯†ç 
+ key3ç¿»é¡µè‡³æ—¶é—´é¡µ/ç¿»å›ž
+	key11  é€€æ ¼
+	key12  ç¡®è®¤ä¿®æ”¹å¯†ç 
+	key13  é€€å‡ºä¿®æ”¹å¯†ç 
+    P33  å±å¹•èƒŒå…‰å¼€å…³
 
 
 
@@ -32,34 +35,34 @@
 
 
 
-u16 Light;//ÁÁ¶È
+u16 Light;//äº®åº¦
 bit flag, lcdflag = 0, ledflag, motorflag, Hflag, Lflag, autoflag,page;
 /*
-flag=0ÃÜÂëËøÊäÈë£¬ÊäÈëÕýÈ·ÃÜÂëºóflag=1
-lcdflag=1£¬ÏÔÊ¾Ê±¼äÎÂÊª¶ÈµÈ×´Ì¬£¬Í¨¹ý¶¨Ê±Æ÷1¼ì²â
-ledflagµÆ¹â±êÖ¾Î»
-motorflag£¬·çÉÈ±êÖ¾Î»
-hflag&lflag£¬×Ô¶¯µ÷½ÚÊ±¼ì²âÕâÁ½¸ö±êÖ¾Î»ÅÐ¶Ïµ±Ç°×´Ì¬Ðè²»ÐèÒªµ÷Õû£¬»·¾³¸Ä±äºóÐÞ¸ÄÕâÁ½¸ö±êÖ¾Î»£¬ÏÂ´Î¼ì²âÊ±Èç¹û»·¾³Ã»ÓÐ¸Ä±ä¾Í²»ÓÃµ÷Õû
-autoflag×Ô¶¯µ÷½Ú±êÖ¾Î»£¬Á½Ãë¸Ä±äÒ»´Î£¬ºÍÎÂÊª¶È¼ì²âÍ¬²½
+flag=0å¯†ç é”è¾“å…¥ï¼Œè¾“å…¥æ­£ç¡®å¯†ç åŽflag=1
+lcdflag=1ï¼Œæ˜¾ç¤ºæ—¶é—´æ¸©æ¹¿åº¦ç­‰çŠ¶æ€ï¼Œé€šè¿‡å®šæ—¶å™¨1æ£€æµ‹
+ledflagç¯å…‰æ ‡å¿—ä½
+motorflagï¼Œé£Žæ‰‡æ ‡å¿—ä½
+hflag&lflagï¼Œè‡ªåŠ¨è°ƒèŠ‚æ—¶æ£€æµ‹è¿™ä¸¤ä¸ªæ ‡å¿—ä½åˆ¤æ–­å½“å‰çŠ¶æ€éœ€ä¸éœ€è¦è°ƒæ•´ï¼ŒçŽ¯å¢ƒæ”¹å˜åŽä¿®æ”¹è¿™ä¸¤ä¸ªæ ‡å¿—ä½ï¼Œä¸‹æ¬¡æ£€æµ‹æ—¶å¦‚æžœçŽ¯å¢ƒæ²¡æœ‰æ”¹å˜å°±ä¸ç”¨è°ƒæ•´
+autoflagè‡ªåŠ¨è°ƒèŠ‚æ ‡å¿—ä½ï¼Œä¸¤ç§’æ”¹å˜ä¸€æ¬¡ï¼Œå’Œæ¸©æ¹¿åº¦æ£€æµ‹åŒæ­¥
 
 */
 u8 stepmotorflag, laststep, changemode;
 /*
-stepmotorflag  ²½½øµç»ú×´Ì¬£¬1234ÎªÎ»ÖÃ
-laststep ÓÃÓÚ¶ÁÈ¡µ±Ç°²½½øµç»úÎ»ÖÃ£¬ºÍstepflag±È½ÏÀ´¾ö¶¨²½½øµç»úÒªÖ´ÐÐµÄ¶¯×÷£¬ÊýÖµ´æ´¢ÔÚat24c02£¨5£©
-changemode  0ÊÖ¶¯µ÷Õû£¬1×Ô¶¯µ÷Õû
+stepmotorflag  æ­¥è¿›ç”µæœºçŠ¶æ€ï¼Œ1234ä¸ºä½ç½®
+laststep ç”¨äºŽè¯»å–å½“å‰æ­¥è¿›ç”µæœºä½ç½®ï¼Œå’Œstepflagæ¯”è¾ƒæ¥å†³å®šæ­¥è¿›ç”µæœºè¦æ‰§è¡Œçš„åŠ¨ä½œï¼Œæ•°å€¼å­˜å‚¨åœ¨at24c02ï¼ˆ5ï¼‰
+changemode  0æ‰‹åŠ¨è°ƒæ•´ï¼Œ1è‡ªåŠ¨è°ƒæ•´
 */
 
-void showmenu()				//ÏÔÊ¾×´Ì¬¿ò¼Ü
+void showmenu()				//æ˜¾ç¤ºçŠ¶æ€æ¡†æž¶
 {
-    Lcd12864_ShowString(0, 0, "ÎÂ¶È    ´°Á±:");
-    Lcd12864_ShowString(1, 0, "Êª¶È    ·çÉÈ:");
-    Lcd12864_ShowString(2, 0, "¹âÕÕ    µÆ¹â: ");
-    Lcd12864_ShowString(4, 0, "    Äê  ÔÂ  ÈÕ");
+    Lcd12864_ShowString(0, 0, "æ¸©åº¦    çª—å¸˜:");
+    Lcd12864_ShowString(1, 0, "æ¹¿åº¦    é£Žæ‰‡:");
+    Lcd12864_ShowString(2, 0, "å…‰ç…§    ç¯å…‰: ");
+    Lcd12864_ShowString(4, 0, "    å¹´  æœˆ  æ—¥");
     Lcd12864_ShowString(5, 0,  "  :   :   ");
 }
 
-void autoset()			//ÎÞÊÓhflag&lflag½øÐÐ×Ô¶¯µ÷Õû£¬ÓÃÓÚÊÖ¶¯µ÷ÕûÇÐ»»»Ø×Ô¶¯µ÷ÕûÊ±hflag&lflag²»×¼È·
+void autoset()			//æ— è§†hflag&lflagè¿›è¡Œè‡ªåŠ¨è°ƒæ•´ï¼Œç”¨äºŽæ‰‹åŠ¨è°ƒæ•´åˆ‡æ¢å›žè‡ªåŠ¨è°ƒæ•´æ—¶hflag&lflagä¸å‡†ç¡®
 {
     if (DHTHotH <= 30)
     {
@@ -79,13 +82,13 @@ void autoset()			//ÎÞÊÓhflag&lflag½øÐÐ×Ô¶¯µ÷Õû£¬ÓÃÓÚÊÖ¶¯µ÷ÕûÇÐ»»»Ø×Ô¶¯µ÷ÕûÊ±hfla
         ledflag = 1;
         stepmotorflag = 4;
         Lflag = 0;
-    }					//´°Á±4£¬ledÁÁ
+    }					//çª—å¸˜4ï¼Œledäº®
     else
     {
         ledflag = 0;
         stepmotorflag = 1;
         Lflag = 1;
-    }//´°Á±1,ledÃð
+    }//çª—å¸˜1,ledç­
 
     
 
@@ -93,22 +96,22 @@ void autoset()			//ÎÞÊÓhflag&lflag½øÐÐ×Ô¶¯µ÷Õû£¬ÓÃÓÚÊÖ¶¯µ÷ÕûÇÐ»»»Ø×Ô¶¯µ÷ÕûÊ±hfla
 
     if (laststep != stepmotorflag)
     {
-        EA = 0;											//ÎªÁËÊ¹²½½øµç»úÔËÐÐÁ÷³©£¬¹Ø±ÕÖÐ¶Ï
-        Lcd12864_Init();								//¹Ø±ÕÖÐ¶ÏºóÏÔÊ¾²»Ë¢ÐÂ£¬ÏÔÊ¾ÕýÔÚµ÷Õû´°Á±¼õÉÙ¿¨¶Ù¸Ð
-        Lcd12864_ShowString(0, 0, "Õý\xfdÔÚµ÷Õû´°Á±");
+        EA = 0;											//ä¸ºäº†ä½¿æ­¥è¿›ç”µæœºè¿è¡Œæµç•…ï¼Œå…³é—­ä¸­æ–­
+        Lcd12864_Init();								//å…³é—­ä¸­æ–­åŽæ˜¾ç¤ºä¸åˆ·æ–°ï¼Œæ˜¾ç¤ºæ­£åœ¨è°ƒæ•´çª—å¸˜å‡å°‘å¡é¡¿æ„Ÿ
+        Lcd12864_ShowString(0, 0, "æ­£\xfdåœ¨è°ƒæ•´çª—å¸˜");
         step(stepmotorflag);
-        showmenu();										//»Ö¸´ÏÔÊ¾
+        showmenu();										//æ¢å¤æ˜¾ç¤º
         EA = 1;
     }
-	P20 = !ledflag;
-    P22 = motorflag;
+	P22= !ledflag;
+    P23 = motorflag;
     autoflag = 0;
 }
 void main()
 {
     u8 i, k = 0, KeyNum, err, keymode, temp[10];
     u32 Password, PasswordNum;
-    P22 = 0;
+    P23 = 0;
     P33 = 1;
     EA = 1;
     Timer0_Init();
@@ -140,7 +143,7 @@ void main()
 
     Lcd12864_Init();
     P33 = 1;
-    Lcd12864_ShowString(0, 0, "ÊäÈëÃÜÂë£º");
+    Lcd12864_ShowString(0, 0, "è¾“å…¥å¯†ç ï¼š");
     KeyNum = 0;
     PasswordNum = AT24C02_ReadByte(1) * 65536;
     PasswordNum += AT24C02_ReadByte(2) * 256;
@@ -173,7 +176,7 @@ void main()
                     if (Password == PasswordNum)
                     {
                         Password = 0;
-                        Lcd12864_ShowString(1, 0, "ÃÜÂëÕý\xfdÈ·    ");
+                        Lcd12864_ShowString(1, 0, "å¯†ç æ­£\xfdç¡®    ");
                         P24 = 0;
                         flag = 1;
                         lcdflag = 1;
@@ -199,8 +202,8 @@ void main()
                         EA = 0;
                         err++;
                         Password = 0;
-                        Lcd12864_ShowString(1, 0, "ÃÜÂë´íÎó    ");
-                        Lcd12864_ShowString(2, 0, "ÃÜÂë´íÎó  ´Î");
+                        Lcd12864_ShowString(1, 0, "å¯†ç é”™è¯¯    ");
+                        Lcd12864_ShowString(2, 0, "å¯†ç é”™è¯¯  æ¬¡");
                         Lcd12864_ShowNum(2, 4, err, 2);
                         i = 0;
 
@@ -266,7 +269,7 @@ void main()
                 {
                     TR1 = 0;
                     Lcd12864_Init();
-                Lcd12864_ShowString(0, 0, "ÐÞ¸ÄÃÜÂë");
+                Lcd12864_ShowString(0, 0, "ä¿®æ”¹å¯†ç ");
                     keymode = 1;
                     lcdflag = 0;
                 }
@@ -287,21 +290,21 @@ void main()
                     {
                     case 5:
                         ledflag = !ledflag;
-                        P20 = !P20;
+                        P22 = !P22;
                         break;
 
                     case 9:
                         motorflag = !motorflag;
-                        P22 = !P22;
+                        P23 = !P23;
                         break;
 
                     case 13:
                         stepmotorflag = 1;
                         EA = 0;
                         Lcd12864_Init();
-                        Lcd12864_ShowString(0, 0, "Õý\xfdÔÚµ÷Õû´°Á±");
+                        Lcd12864_ShowString(0, 0, "æ­£\xfdåœ¨è°ƒæ•´çª—å¸˜");
                         step(1);
-                        P20 = !ledflag;
+                        P22 = !ledflag;
                         showmenu();
                         EA = 1;
                         break;
@@ -310,9 +313,9 @@ void main()
                         stepmotorflag = 2;
                         EA = 0;
                         Lcd12864_Init();
-                        Lcd12864_ShowString(0, 0, "Õý\xfdÔÚµ÷Õû´°Á±");
+                        Lcd12864_ShowString(0, 0, "æ­£\xfdåœ¨è°ƒæ•´çª—å¸˜");
                         step(2);
-                        P20 = !ledflag;
+                        P22 = !ledflag;
                         showmenu();
                         EA = 1;
                         break;
@@ -321,9 +324,9 @@ void main()
                         stepmotorflag = 3;
                         EA = 0;
                         Lcd12864_Init();
-                        Lcd12864_ShowString(0, 0, "Õý\xfdÔÚµ÷Õû´°Á±");
+                        Lcd12864_ShowString(0, 0, "æ­£\xfdåœ¨è°ƒæ•´çª—å¸˜");
                         step(3);
-                        P20 = !ledflag;
+                        P22 = !ledflag;
                         showmenu();
                         EA = 1;
                         break;
@@ -332,9 +335,9 @@ void main()
                         stepmotorflag = 4;
                         EA = 0;
                         Lcd12864_Init();
-                        Lcd12864_ShowString(0, 0, "Õý\xfdÔÚµ÷Õû´°Á±");
+                        Lcd12864_ShowString(0, 0, "æ­£\xfdåœ¨è°ƒæ•´çª—å¸˜");
                         step(4);
-                        P20 = !ledflag;
+                        P22 = !ledflag;
                         showmenu();
                         EA = 1;
                         break;
@@ -374,7 +377,7 @@ void main()
                                 stepmotorflag = 4;
                                 Lflag = 0;
                             }
-                        }					//´°Á±0£¬ledÁÁ
+                        }					//çª—å¸˜0ï¼Œledäº®
                         else
                         {
                             if (Lflag == 0)
@@ -383,7 +386,7 @@ void main()
                                 stepmotorflag = 1;
                                 Lflag = 1;
                             }
-                        }//´°Á±1/4,ledÃð
+                        }//çª—å¸˜1/4,ledç­
 
                         
                         
@@ -392,12 +395,12 @@ void main()
                         {
                             EA = 0;
                             Lcd12864_Init();
-                            Lcd12864_ShowString(0, 0, "Õý\xfdÔÚµ÷Õû´°Á±");
+                            Lcd12864_ShowString(0, 0, "æ­£\xfdåœ¨è°ƒæ•´çª—å¸˜");
                             step(stepmotorflag);
                             showmenu();
                             EA = 1;
-                        }P20 = !ledflag;
-P22 = motorflag;
+                        }P22 = !ledflag;
+P23 = motorflag;
                         autoflag = 0;
                     }
                 }
@@ -437,7 +440,7 @@ P22 = motorflag;
                     AT24C02_WriteByte(3, Password % 256);
                     Delay(5);
                     Lcd12864_ShowString(1, 0,  "        ");
-                    Lcd12864_ShowString(1, 0,  "ÐÞ¸Ä³É¹¦");
+                    Lcd12864_ShowString(1, 0,  "ä¿®æ”¹æˆåŠŸ");
                     keymode = 0;
                     Delay(1000);
                     showmenu();
@@ -466,13 +469,13 @@ P22 = motorflag;
 void Timer0_Isr(void) interrupt 1
 {
     static unsigned int T0Count, T4Count;
-    TL0 = 0x66;				//ÉèÖÃ¶¨Ê±³õÊ¼Öµ
-    TH0 = 0xFC;				//ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+    TL0 = 0x66;				//è®¾ç½®å®šæ—¶åˆå§‹å€¼
+    TH0 = 0xFC;				//è®¾ç½®å®šæ—¶åˆå§‹å€¼
     T0Count++;
 
     if (T0Count % 20 == 0)
     {
-        Key_Loop();    //20msµ÷ÓÃÒ»´Î°´¼üÇý¶¯º¯Êý
+        Key_Loop();    //20msè°ƒç”¨ä¸€æ¬¡æŒ‰é”®é©±åŠ¨å‡½æ•°
     }
 	T4Count %= 2000;
 
@@ -492,8 +495,8 @@ void Timer1_Isr(void) interrupt 3
 {
     static unsigned int T1Count, T2Count, T3Count;
     static unsigned char u, umode;
-    TL1 = 0x66;				//ÉèÖÃ¶¨Ê±³õÊ¼Öµ
-    TH1 = 0xFC;				//ÉèÖÃ¶¨Ê±³õÊ¼Öµ
+    TL1 = 0x66;				//è®¾ç½®å®šæ—¶åˆå§‹å€¼
+    TH1 = 0xFC;				//è®¾ç½®å®šæ—¶åˆå§‹å€¼
     T1Count++;
     T2Count++;
     
@@ -547,46 +550,46 @@ void Timer1_Isr(void) interrupt 3
 
             if (ledflag)
             {
-                Lcd12864_ShowString(2, 7, "¿ª");//µÆ
+                Lcd12864_ShowString(2, 7, "å¼€");//ç¯
             }
             else
             {
-                Lcd12864_ShowString(2, 7, "¹Ø");//µÆ
+                Lcd12864_ShowString(2, 7, "å…³");//ç¯
             }
 
             if (motorflag)
             {
-                Lcd12864_ShowString(1, 7, "¿ª");//¿ª¹Ø·çÉÈ
+                Lcd12864_ShowString(1, 7, "å¼€");//å¼€å…³é£Žæ‰‡
             }
             else
             {
-                Lcd12864_ShowString(1, 7, "¹Ø");    //¿ª¹Ø·çÉÈ
+                Lcd12864_ShowString(1, 7, "å…³");    //å¼€å…³é£Žæ‰‡
             }
 
             if (stepmotorflag == 4)
             {
-                Lcd12864_ShowString(0, 6, ":1  ");    //´°Á±0
+                Lcd12864_ShowString(0, 6, ":1  ");    //çª—å¸˜0
             }
             else if (stepmotorflag == 1)
             {
-                Lcd12864_ShowString(0, 6, ":1/4");    //´°Á±1/4
+                Lcd12864_ShowString(0, 6, ":1/4");    //çª—å¸˜1/4
             }
             else if (stepmotorflag == 2)
             {
-                Lcd12864_ShowString(0, 6, ":1/2");    //´°Á±1/2
+                Lcd12864_ShowString(0, 6, ":1/2");    //çª—å¸˜1/2
             }
             else if (stepmotorflag == 3)
             {
-                Lcd12864_ShowString(0, 6, ":3/4");    //´°Á±3/4
+                Lcd12864_ShowString(0, 6, ":3/4");    //çª—å¸˜3/4
             }
 
             if (changemode)
             {
-                Lcd12864_ShowString(3, 0, "×Ô¶¯µ÷½Ú");
+                Lcd12864_ShowString(3, 0, "è‡ªåŠ¨è°ƒèŠ‚");
             }
             else
             {
-                Lcd12864_ShowString(3, 0, "ÊÖ¶¯µ÷½Ú");    //ÊÖ¶¯µ÷½Ú
+                Lcd12864_ShowString(3, 0, "æ‰‹åŠ¨è°ƒèŠ‚");    //æ‰‹åŠ¨è°ƒèŠ‚
             }
         }
     }
