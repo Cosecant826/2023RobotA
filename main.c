@@ -408,11 +408,6 @@ P22 = motorflag;
 
                 if (KeyNum <= 10 && KeyNum > 0 && k < 6)
                 {
-//                    if (k == 0)
-//                    {
-//                        Lcd12864_WriteCMD(0x90);
-//                    }
-
                     Password *= 10;
                     Password += KeyNum % 10;
                     temp[k] = KeyNum % 10 + 0x30;
