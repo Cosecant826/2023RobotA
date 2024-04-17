@@ -1,7 +1,7 @@
 #include <STC12C5A60S2.H>
 #include "Delay.h"
 #include "lcd12864.h"
-sbit  DHT_IO  = P3 ^ 0;
+sbit  DHT_IO  = P3 ^ 1;
 
 unsigned char DHTCount, DHTTemp, DHTComdata, DHTHotH, DHTHotL, DHTWetH, DHTWetL, DHTCheck;
 unsigned char DHTHotHtemp, DHTHotLtemp, DHTWetHtemp, DHTWetLtemp, DHTChecktemp;

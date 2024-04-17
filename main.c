@@ -1,13 +1,16 @@
-/*	P22 LED
+/*
+	P20P21 GY30
+	P22 LED
 	P24 门锁
 	P23 风扇
 	P31  dht11
+	P30 DS18B20
 	key1 键入1     手动自动切换开关
 	key5 LED开关
 	key9 风扇开关
 	key13-16  步进电机1 2 3 4圈
 	key2  修改密码
-	key3翻页至时间页/翻回
+	key3  翻页至时间页/翻回
 	key11  退格
 	key12  确认修改密码
 	key13  退出修改密码
@@ -27,12 +30,13 @@
 #include "Timer.h"
 #include "stepmotor.h"
 #include "Buzzer.h"
-
+#include "DS18B20.h"
 
 
 
 u16 Light;//亮度
 bit flag, lcdflag = 0, ledflag, motorflag, Hflag, Lflag, autoflag, page;
+float Te;
 /*
 flag=0密码锁输入，输入正确密码后flag=1
 lcdflag=1，显示时间温湿度等状态，通过定时器1检测
@@ -60,7 +64,7 @@ void showmenu()				//显示状态框架
 
 void autoset()			//无视hflag&lflag进行自动调整，用于手动调整切换回自动调整时hflag&lflag不准确
 {
-    if (DHTHotH <= 30)
+    if (Te <= 30)
     {
         motorflag = 0;
         stepmotorflag = 1;
@@ -78,13 +82,25 @@ void autoset()			//无视hflag&lflag进行自动调整，用于手动调整切换回自动调整时hfla
         ledflag = 1;
         stepmotorflag = 4;
         Lflag = 0;
-    }					//窗帘4，led亮
+    }					//窗帘0，led亮
+    else if (Light > 100 && Light <= 300)
+    {
+        ledflag = 0;
+        stepmotorflag = 3;
+        Lflag = 1;
+    }//窗帘1/4,led灭
+    else if (Light > 300 && Light <= 700)
+    {
+        ledflag = 0;
+        stepmotorflag = 2;
+        Lflag = 2;
+    }
     else
     {
         ledflag = 0;
         stepmotorflag = 1;
-        Lflag = 1;
-    }//窗帘1,led灭
+        Lflag = 3;
+    }
 
     laststep = AT24C02_ReadByte(5);
 
@@ -143,7 +159,6 @@ void main()
     PasswordNum = AT24C02_ReadByte(1) * 65536;
     PasswordNum += AT24C02_ReadByte(2) * 256;
     PasswordNum += AT24C02_ReadByte(3);
-    //PasswordNum = 111111;
 
     while (1)
     {
@@ -354,7 +369,7 @@ void main()
                 {
                     if (autoflag)
                     {
-                        if (DHTHotH <= 30)
+                        if (Te <= 30)
                         {
                             if (Hflag)
                             {
@@ -382,15 +397,33 @@ void main()
                                 Lflag = 0;
                             }
                         }					//窗帘0，led亮
-                        else
+                        else if (Light > 100 && Light <= 300)
                         {
-                            if (Lflag == 0)
+                            if (Lflag != 1)
                             {
                                 ledflag = 0;
-                                stepmotorflag = 1;
+                                stepmotorflag = 3;
                                 Lflag = 1;
                             }
                         }//窗帘1/4,led灭
+                        else if (Light > 300 && Light <= 700)
+                        {
+                            if (Lflag != 2)
+                            {
+                                ledflag = 0;
+                                stepmotorflag = 2;
+                                Lflag = 2;
+                            }
+                        }
+                        else
+                        {
+                            if (Lflag != 3)
+                            {
+                                ledflag = 0;
+                                stepmotorflag = 1;
+                                Lflag = 3;
+                            }
+                        }
 
                         laststep = AT24C02_ReadByte(5);
 
@@ -483,12 +516,14 @@ void Timer0_Isr(void) interrupt 1
         Key_Loop();    //20ms调用一次按键驱动函数
     }
 
-    T4Count %= 2000;
+    T4Count %= 500;
 
     if (T4Count == 0)
     {
-        // DHT();
+        DHT();
         Light = Get_GY();
+        DS18B20_ConvertT();
+        Te = DS18B20_ReadT();
         autoflag = 1;
     }
 
@@ -500,7 +535,6 @@ void Timer0_Isr(void) interrupt 1
 void Timer1_Isr(void) interrupt 3
 {
     static unsigned int T1Count, T2Count, T3Count;
-    static unsigned char u, umode;
     TL1 = 0x66;				//设置定时初始值
     TH1 = 0xFC;				//设置定时初始值
     T1Count++;
@@ -516,27 +550,6 @@ void Timer1_Isr(void) interrupt 3
         P24 = 1;
     }
 
-//    if (T1Count >= 50)
-//    {
-//        T1Count = 0;
-
-//        if (umode == 0)
-//        {
-//            u++;
-//        }
-//        else
-//        {
-//            u--;
-//        }
-
-//        if (u >= 16 || u <= 0)
-//        {
-//            umode = !umode;
-//        }
-
-//        Roll(u);
-//    }
-
     if (T2Count == 20)
     {
         T2Count = 0;
@@ -549,7 +562,7 @@ void Timer1_Isr(void) interrupt 3
             Lcd12864_ShowNum(5, 0, DS1302_Time[3], 2);
             Lcd12864_ShowNum(5, 2, DS1302_Time[4], 2);
             Lcd12864_ShowNum(5, 4, DS1302_Time[5], 2);
-            Lcd12864_ShowNum(0, 2, DHTHotH, 2);
+            Lcd12864_ShowNum(0, 2, Te, 2);
             Lcd12864_ShowNum(1, 2, DHTWetH, 2);
             Lcd12864_ShowNum(2, 2, Light, 4);
 
