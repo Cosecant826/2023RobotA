@@ -134,6 +134,23 @@ void Lcd12864_ShowNum(unsigned char X, unsigned char Y, unsigned long Num, unsig
         Lcd12864_WriteData(Num / LCD_Pow(10, i - 1) % 10 + '0');
     }
 }
+void Lcd12864_ShowFloatNum(unsigned char X, unsigned char Y, unsigned long Num, unsigned char Length)
+{
+    unsigned char i;
+    Lcd12864_ShowPosition(X, Y);
+
+    for (i = Length + 1; i > 0; i--)
+    {
+        if (i == Length + 1)
+        {
+            Lcd12864_WriteData(0x2E);
+        }
+        else
+        {
+            Lcd12864_WriteData(Num / LCD_Pow(10, i - 2) % 10 + '0');
+        }
+    }
+}
 
 
 

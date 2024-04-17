@@ -22,5 +22,5 @@ void ShutdownDisplay();
 void Left(unsigned char i);
 void Right(unsigned char i);
 void Lcd12864_ShowNum(unsigned char X, unsigned char Y, unsigned long Num, unsigned char Length);
-
+void Lcd12864_ShowFloatNum(unsigned char X, unsigned char Y, unsigned long Num, unsigned char Length);
 #endif

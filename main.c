@@ -55,9 +55,10 @@ changemode  0手动调整，1自动调整
 
 void showmenu()				//显示状态框架
 {
-    Lcd12864_ShowString(0, 0, "温度    窗帘:");
+    Lcd12864_ShowString(0, 0, "温度");
     Lcd12864_ShowString(1, 0, "湿度    风扇:");
     Lcd12864_ShowString(2, 0, "光照    灯光: ");
+    Lcd12864_ShowString(3, 0, "窗帘:");
     Lcd12864_ShowString(4, 0, "    年  月  日");
     Lcd12864_ShowString(5, 0,  "  :   :   ");
 }
@@ -192,6 +193,7 @@ void main()
                         flag = 1;
                         lcdflag = 1;
                         Delay(700);
+                        Lcd12864_Init();
                         showmenu();
                         stepmotorflag = AT24C02_ReadByte(5);
                         DS1302_ReadTime();
@@ -563,6 +565,7 @@ void Timer1_Isr(void) interrupt 3
             Lcd12864_ShowNum(5, 2, DS1302_Time[4], 2);
             Lcd12864_ShowNum(5, 4, DS1302_Time[5], 2);
             Lcd12864_ShowNum(0, 2, Te, 2);
+			Lcd12864_ShowFloatNum(0, 3, (u32)(Te*10000)%10000, 4);
             Lcd12864_ShowNum(1, 2, DHTWetH, 2);
             Lcd12864_ShowNum(2, 2, Light, 4);
 
@@ -586,28 +589,28 @@ void Timer1_Isr(void) interrupt 3
 
             if (stepmotorflag == 4)
             {
-                Lcd12864_ShowString(0, 6, ":1  ");    //窗帘0
+                Lcd12864_ShowString(3, 2, ":1  ");    //窗帘0
             }
             else if (stepmotorflag == 1)
             {
-                Lcd12864_ShowString(0, 6, ":1/4");    //窗帘1/4
+                Lcd12864_ShowString(3, 2, ":1/4");    //窗帘1/4
             }
             else if (stepmotorflag == 2)
             {
-                Lcd12864_ShowString(0, 6, ":1/2");    //窗帘1/2
+                Lcd12864_ShowString(3, 2, ":1/2");    //窗帘1/2
             }
             else if (stepmotorflag == 3)
             {
-                Lcd12864_ShowString(0, 6, ":3/4");    //窗帘3/4
+                Lcd12864_ShowString(3, 2, ":3/4");    //窗帘3/4
             }
 
             if (changemode)
             {
-                Lcd12864_ShowString(3, 0, "自动调节");
+                Lcd12864_ShowString(3, 4, "自动调节");
             }
             else
             {
-                Lcd12864_ShowString(3, 0, "手动调节");    //手动调节
+                Lcd12864_ShowString(3, 4, "手动调节");    //手动调节
             }
         }
     }
