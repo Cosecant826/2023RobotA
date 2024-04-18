@@ -522,7 +522,7 @@ void Timer0_Isr(void) interrupt 1
 
     if (T4Count == 0)
     {
-        DHT();
+        //DHT();
         Light = Get_GY();
         DS18B20_ConvertT();
         Te = DS18B20_ReadT();
@@ -565,7 +565,7 @@ void Timer1_Isr(void) interrupt 3
             Lcd12864_ShowNum(5, 2, DS1302_Time[4], 2);
             Lcd12864_ShowNum(5, 4, DS1302_Time[5], 2);
             Lcd12864_ShowNum(0, 2, Te, 2);
-			Lcd12864_ShowFloatNum(0, 3, (u32)(Te*10000)%10000, 4);
+            Lcd12864_ShowFloatNum(0, 3, (u32)(Te * 10000) % 10000, 4);
             Lcd12864_ShowNum(1, 2, DHTWetH, 2);
             Lcd12864_ShowNum(2, 2, Light, 4);
 
